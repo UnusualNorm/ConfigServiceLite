@@ -14,7 +14,13 @@ const HEADER = 0xbb8ce7a278bb40f6n;
 Deno.serve({
   port: 31112,
 }, (req) => {
-  if (req.method !== "GET" || req.headers.get("upgrade") !== "websocket") {
+  if (req.method !== "GET") {
+    return new Response(null, {
+      status: 405,
+    });
+  }
+
+  if (req.headers.get("upgrade") !== "websocket") {
     return new Response(null, {
       status: 400,
     });
@@ -50,12 +56,16 @@ Deno.serve({
     const configData = new TextEncoder().encode(JSON.stringify(config));
     const uncompressed = new Uint8Array(configData.byteLength + 1);
     uncompressed.set(configData, 0);
+
     const compressed = compress(uncompressed);
-    const data = new Uint8Array(16 + compressed.byteLength);
+    const data = new Uint8Array(20 + compressed.byteLength);
     const dataView = new DataView(data.buffer);
+
     dataView.setBigInt64(0, typeSymbol, true);
     dataView.setBigInt64(8, idSymbol, true);
-    data.set(compressed, 16);
+    dataView.setUint32(16, configData.byteLength, true);
+    data.set(compressed, 20);
+
     send(await getSymbol("SNSConfigSuccessv2"), data);
     send(await getSymbol("STcpConnectionUnrequireEvent"), new Uint8Array([0]));
   };
