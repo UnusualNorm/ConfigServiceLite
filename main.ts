@@ -63,7 +63,7 @@ Deno.serve({
 
     dataView.setBigInt64(0, typeSymbol, true);
     dataView.setBigInt64(8, idSymbol, true);
-    dataView.setUint32(16, configData.byteLength, true);
+    dataView.setUint32(16, uncompressed.byteLength, true);
     data.set(compressed, 20);
 
     send(await getSymbol("SNSConfigSuccessv2"), data);
