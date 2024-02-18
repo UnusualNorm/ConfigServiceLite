@@ -11,7 +11,7 @@ const readDirForConfigs = async (dir: string) => {
     }
   }
 };
-readDirForConfigs(CONFIGS_DIR);
+await readDirForConfigs(CONFIGS_DIR);
 
 export interface Config {
   priority: number;
@@ -22,11 +22,11 @@ export interface Config {
 }
 
 const configs: Config[] = [];
-
 for (const file of configFiles) {
   const data = await Deno.readTextFile(file);
   const config: Config = JSON.parse(data);
   configs.push(config);
+  console.log(config);
 }
 
 export const getConfig = (
