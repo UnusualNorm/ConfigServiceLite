@@ -1,5 +1,5 @@
-// const SYMBOL_SERVICE = Deno.env.get("SYMBOL_SERVICE")!;
-const SYMBOL_SERVICE = "http://localhost:8080";
+const SYMBOL_SERVICE = Deno.env.get("SYMBOL_SERVICE")!;
+// const SYMBOL_SERVICE = "http://localhost:8080";
 
 export const generateSymbol = async (
   name: string,
