@@ -1,7 +1,7 @@
 FROM denoland/deno:debian-1.40.5
 
 # The port that your application listens to.
-EXPOSE 1993
+EXPOSE 31112
 
 WORKDIR /app
 
