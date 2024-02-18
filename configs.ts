@@ -26,7 +26,6 @@ for (const file of configFiles) {
   const data = await Deno.readTextFile(file);
   const config: Config = JSON.parse(data);
   configs.push(config);
-  console.log(config);
 }
 
 export const getConfig = (
