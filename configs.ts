@@ -38,7 +38,7 @@ export const getConfig = (
     configs.filter((config) =>
       config.platforms.includes(platform) && config.type === type &&
       config.id === id
-    ).sort((a, b) => a.priority - b.priority)[0];
+    ).sort((a, b) => b.priority - a.priority)[0];
 
   if (!config && platform !== "generic") return getConfig("generic", type, id);
   else if (!config) return;
