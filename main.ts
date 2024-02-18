@@ -20,24 +20,34 @@ Deno.serve({
     });
   }
 
+  const url = new URL(req.url);
   if (req.headers.get("upgrade") !== "websocket") {
-    return new Response(null, {
-      status: 400,
+    const path = url.pathname.split("/").slice(1);
+    if (path.length !== 3) {
+      return new Response(null, {
+        status: 400,
+      });
+    }
+
+    const [platform, type, id] = path;
+    const config = getConfig(platform, type, id);
+    if (!config) {
+      return new Response(null, {
+        status: 404,
+      });
+    }
+
+    return new Response(JSON.stringify(config), {
+      headers: {
+        "content-type": "application/json",
+      },
     });
   }
 
-  const url = new URL(req.url);
   const platform = url.searchParams.get("platform") || "generic";
   const { socket, response } = Deno.upgradeWebSocket(req);
 
   const send = (symbol: bigint, data: Uint8Array): void => {
-    console.log(
-      `Sending ${stringifySymbol(symbol)} (${
-        Array.from(data).map((byte) => byte.toString(16).padStart(2, "0")).join(
-          "",
-        )
-      })`,
-    );
     const length = BigInt(data.byteLength);
     const buffer = new Uint8Array(24 + data.byteLength);
     const dataView = new DataView(buffer.buffer);
@@ -91,14 +101,6 @@ Deno.serve({
   };
 
   const recieve = async (symbol: bigint, data: Uint8Array) => {
-    console.log(
-      `Recieved ${stringifySymbol(symbol)} (${
-        Array.from(data).map((byte) => byte.toString(16).padStart(2, "0")).join(
-          "",
-        )
-      })`,
-    );
-
     if (symbol != await getSymbol("SNSConfigRequestv2")) return;
     const _typeTail = data[0];
     const infoData = data.slice(1, data.length - 1);
